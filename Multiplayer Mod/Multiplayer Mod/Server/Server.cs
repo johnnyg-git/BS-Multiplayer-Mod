@@ -23,6 +23,8 @@ namespace Multiplayer_Mod.Server
 
         // Clients and their ids
         public static Dictionary<int, Client> clients = new Dictionary<int, Client>();
+        // Player data and their ids
+        public static Dictionary<int, PlayerData> players = new Dictionary<int, PlayerData>();
         // Packet handlers and the id of what packet type they are handing
         public static Dictionary<int, PacketHandler> packetHandlers;
         // How packet handling methods should be setup
@@ -59,6 +61,8 @@ namespace Multiplayer_Mod.Server
 
             Debug.Log($"Server started on port {Port}.");
             Manager.serverRunning = true;
+            //Connects host to the server
+            Manager.connectClient("127.0.0.1", Port);
         }
 
         /// <summary>
@@ -69,7 +73,7 @@ namespace Multiplayer_Mod.Server
         private static void InitializeServerData()
         {
             // Fills clients dictionary with temporary clients to be assigned
-            for (int i = 1; i <= MaxPlayers; i++)
+            for (int i = 1; i <= MaxPlayers+10; i++)
             {
                 clients.Add(i, new Client(i));
             }
@@ -80,8 +84,6 @@ namespace Multiplayer_Mod.Server
                 { (int)packetTypes.playerInfo, ServerHandler.handlePlayerInfo }
             };
             Debug.Log("Initialized packets.");
-            // Connects the host to their server
-            Manager.connectClient("127.0.0.1", Port);
         }
 
         /// <summary>
@@ -106,6 +108,15 @@ namespace Multiplayer_Mod.Server
                 }
             }
             // Only reaches this point if the server is full
+            for (int i = MaxPlayers+1; i <= MaxPlayers+10; i++)
+            {
+                if (clients[i].tcp.socket == null)
+                {
+                    clients[i].tcp.Connect(_client);
+                    ServerSender.SendError(i,"Failed to connect, server is full");
+                }
+            }
+
             Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server full!");
         }
 

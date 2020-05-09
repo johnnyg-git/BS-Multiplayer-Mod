@@ -11,8 +11,9 @@ namespace Multiplayer_Mod
     /// </summary>
     public enum packetTypes
     {
-        playerInfo,
+        playerInfo = 1,
         welcome,
+        disconnect,
         error
     }
 }

@@ -109,6 +109,16 @@ namespace Multiplayer_Mod.Server
             }
         }
 
+        public static void SendDisconnect(int _disconectee)
+        {
+            Debug.Log("Sending disconnect message from " + _disconectee);
+            using (Packet _packet = new Packet((int)packetTypes.disconnect))
+            {
+                _packet.Write(_disconectee);
+                SendTCPDataToAll(_packet);
+            }
+        }
+
         /// <summary>
         /// Will send an error message to a client
         /// </summary>

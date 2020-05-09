@@ -1,4 +1,7 @@
-﻿using System;
+﻿using BS;
+using Multiplayer_Mod.Client;
+using Multiplayer_Mod.Server;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +17,8 @@ namespace Multiplayer_Mod
     {
         // Current manager
         public static Manager instance;
+        // Own player data
+        public static PlayerData player;
         // Is a server running on the local host
         public static bool serverRunning;
 
@@ -31,6 +36,34 @@ namespace Multiplayer_Mod
             }
         }
 
+        void OnApplicationQuit()
+        {
+            disconnectClient();
+        }
+
+        /// <summary>
+        /// Will handle received data and send out data on clientside and serverside if server is running
+        /// </summary>
+        void Update()
+        {
+            ThreadManager.UpdateMain();
+            if(Client.Client.connected)
+            {
+                // Client is connected to a server
+                if (player == null) player = new PlayerData();
+                if (Player.local != null && Player.local.body != null) {
+                    player.leftHand.position = Player.local.body.handLeft.transform.position;
+                    player.rightHand.position = Player.local.body.handRight.transform.position;
+                    player.head.position = Player.local.head.transform.position;
+                    ClientSender.sendPlayerData(player);
+                }
+            }
+            if(serverRunning)
+            {
+                // Server is running
+            }
+        }
+
         /// <summary>
         /// Will connect the client to a server
         /// </summary>
@@ -38,7 +71,16 @@ namespace Multiplayer_Mod
         /// <param name="port">The port to connect to</param>
         public static void connectClient(string ip, int port)
         {
+            Debug.Log("Connecting client to " + ip + ":" + port);
+            new Client.Client(ip, port);
+        }
 
+        public static void disconnectClient()
+        {
+            if (Client.Client.connected)
+            {
+                Client.Client.instance.Disconnect();
+            }
         }
 
         /// <summary>

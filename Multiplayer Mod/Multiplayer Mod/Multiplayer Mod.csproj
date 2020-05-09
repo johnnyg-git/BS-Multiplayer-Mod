@@ -65,6 +65,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\Client.cs" />
+    <Compile Include="Client\ClientHandler.cs" />
+    <Compile Include="Client\ClientSender.cs" />
+    <Compile Include="DataHolders\ObjectData.cs" />
+    <Compile Include="DataHolders\PlayerData.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="GUIManager.cs" />
     <Compile Include="Manager.cs" />

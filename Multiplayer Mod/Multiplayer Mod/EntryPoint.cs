@@ -22,11 +22,13 @@ namespace Multiplayer_Mod
         {
             // Creates the manager GameObject and gives it the Manager MonoBehaviour
             // Makes it so that GameObject is not destroyed on loading a new scene
-            GameObject.DontDestroyOnLoad(new GameObject().AddComponent<Manager>().gameObject);
+            Manager m = new GameObject().AddComponent<Manager>();
+            GameObject.DontDestroyOnLoad(m.gameObject);
 
             // Adds the commands to the debug console
-            DebugLogConsole.AddCommandInstance("connect", "Connect as client, Parameters: ip, port", "connectClient", typeof(Manager));
-            DebugLogConsole.AddCommandInstance("start", "Start a server, Parameters, port, maxPlayers", "startServer", typeof(Manager));
+            DebugLogConsole.AddCommandInstance("connect", "Connect as client, Parameters: ip, port", "connectClient", m);
+            DebugLogConsole.AddCommandInstance("start", "Start a server, Parameters, port, maxPlayers", "startServer", m);
+            DebugLogConsole.AddCommandInstance("disconnect", "Disconnect from a server", "disconnectClient", m);
         }
     }
 }

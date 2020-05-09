@@ -9,7 +9,7 @@ namespace Multiplayer_Mod
 {
     public class GUIManager : MonoBehaviour
     {
-        public string ip = "172.0.0.1";
+        public string ip = "127.0.0.1";
         public string maxPlayers = "25";
         public string port = "26950";
         public int menu = 0;

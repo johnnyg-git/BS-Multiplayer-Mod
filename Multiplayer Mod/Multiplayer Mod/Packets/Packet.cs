@@ -15,115 +15,115 @@ namespace Multiplayer_Mod
 
 		public Packet()
 		{
-			this.buffer = new List<byte>();
-			this.readPos = 0;
+			buffer = new List<byte>();
+			readPos = 0;
 		}
 
 		public Packet(int _id)
 		{
-			this.buffer = new List<byte>();
-			this.readPos = 0;
-			this.Write(_id);
+			buffer = new List<byte>();
+			readPos = 0;
+			Write(_id);
 		}
 
 		public Packet(byte[] _data)
 		{
-			this.buffer = new List<byte>();
-			this.readPos = 0;
-			this.SetBytes(_data);
+			buffer = new List<byte>();
+			readPos = 0;
+			SetBytes(_data);
 		}
 
 		public void SetBytes(byte[] _data)
 		{
-			this.Write(_data);
-			this.readableBuffer = this.buffer.ToArray();
+			Write(_data);
+			readableBuffer = buffer.ToArray();
 		}
 
 		public void InsertInt(int _value)
 		{
-			this.buffer.InsertRange(0, BitConverter.GetBytes(_value));
+			buffer.InsertRange(0, BitConverter.GetBytes(_value));
 		}
 
 		public byte[] ToArray()
 		{
-			this.readableBuffer = this.buffer.ToArray();
-			return this.readableBuffer;
+			readableBuffer = buffer.ToArray();
+			return readableBuffer;
 		}
 
 		public int Length()
 		{
-			return this.buffer.Count;
+			return buffer.Count;
 		}
 
 		public int UnreadLength()
 		{
-			return this.Length() - this.readPos;
+			return Length() - readPos;
 		}
 
 		public void Reset(bool _shouldReset = true)
 		{
 			if (_shouldReset)
 			{
-				this.buffer.Clear();
-				this.readableBuffer = null;
-				this.readPos = 0;
+				buffer.Clear();
+				readableBuffer = null;
+				readPos = 0;
 				return;
 			}
-			this.readPos -= 4;
+			readPos -= 4;
 		}
 
 		#region writing
 		public void WriteLength()
 		{
-			this.buffer.InsertRange(0, BitConverter.GetBytes(this.buffer.Count));
+			buffer.InsertRange(0, BitConverter.GetBytes(buffer.Count));
 		}
 
 		public void Write(byte _value)
 		{
-			this.buffer.Add(_value);
+			buffer.Add(_value);
 		}
 
 		public void Write(byte[] _value)
 		{
-			this.buffer.AddRange(_value);
+			buffer.AddRange(_value);
 		}
 
 		public void Write(short _value)
 		{
-			this.buffer.AddRange(BitConverter.GetBytes(_value));
+			buffer.AddRange(BitConverter.GetBytes(_value));
 		}
 
 		public void Write(int _value)
 		{
-			this.buffer.AddRange(BitConverter.GetBytes(_value));
+			buffer.AddRange(BitConverter.GetBytes(_value));
 		}
 
 		public void Write(long _value)
 		{
-			this.buffer.AddRange(BitConverter.GetBytes(_value));
+			buffer.AddRange(BitConverter.GetBytes(_value));
 		}
 
 		public void Write(float _value)
 		{
-			this.buffer.AddRange(BitConverter.GetBytes(_value));
+			buffer.AddRange(BitConverter.GetBytes(_value));
 		}
 
 		public void Write(bool _value)
 		{
-			this.buffer.AddRange(BitConverter.GetBytes(_value));
+			buffer.AddRange(BitConverter.GetBytes(_value));
 		}
 
 		public void Write(string _value)
 		{
-			this.Write(_value.Length);
-			this.buffer.AddRange(Encoding.ASCII.GetBytes(_value));
+			Write(_value.Length);
+			buffer.AddRange(Encoding.ASCII.GetBytes(_value));
 		}
 
 		public void Write(Vector3 _value)
 		{
-			this.Write(_value.x);
-			this.Write(_value.y);
-			this.Write(_value.z);
+			Write(_value.x);
+			Write(_value.y);
+			Write(_value.z);
 		}
 
 		public void Write(Quaternion _value)
@@ -140,17 +140,44 @@ namespace Multiplayer_Mod
 			Write(_value.g);
 			Write(_value.b);
 		}
+
+		public void Write(Vector3 _value, Vector3 _oldValue)
+		{
+			if (_value == _oldValue) Write(false);
+			else { Write(true); Write(_value); }
+		}
+
+		public void Write(Quaternion _value, Quaternion _oldValue)
+		{
+			if (_value == _oldValue) Write(false);
+			else { Write(true); Write(_value); }
+		}
+
+		public void Write(PlayerData _value)
+		{
+			Write(_value.head);
+			Write(_value.leftHand);
+			Write(_value.rightHand);
+		}
+
+		public void Write(ObjectData _value)
+		{
+			Write(_value.position, _value.prevPosition);
+			Write(_value.rotation, _value.prevRotation);
+			Write(_value.velocity, _value.prevVelocity);
+		}
+
 		#endregion
 
 		#region reading
 		public byte ReadByte(bool _moveReadPos = true)
 		{
-			if (this.buffer.Count > this.readPos)
+			if (buffer.Count > readPos)
 			{
-				byte result = this.readableBuffer[this.readPos];
+				byte result = readableBuffer[readPos];
 				if (_moveReadPos)
 				{
-					this.readPos++;
+					readPos++;
 				}
 				return result;
 			}
@@ -159,12 +186,12 @@ namespace Multiplayer_Mod
 
 		public byte[] ReadBytes(int _length, bool _moveReadPos = true)
 		{
-			if (this.buffer.Count > this.readPos)
+			if (buffer.Count > readPos)
 			{
-				byte[] result = this.buffer.GetRange(this.readPos, _length).ToArray();
+				byte[] result = buffer.GetRange(readPos, _length).ToArray();
 				if (_moveReadPos)
 				{
-					this.readPos += _length;
+					readPos += _length;
 				}
 				return result;
 			}
@@ -173,12 +200,12 @@ namespace Multiplayer_Mod
 
 		public short ReadShort(bool _moveReadPos = true)
 		{
-			if (this.buffer.Count > this.readPos)
+			if (buffer.Count > readPos)
 			{
-				short result = BitConverter.ToInt16(this.readableBuffer, this.readPos);
+				short result = BitConverter.ToInt16(readableBuffer, readPos);
 				if (_moveReadPos)
 				{
-					this.readPos += 2;
+					readPos += 2;
 				}
 				return result;
 			}
@@ -187,12 +214,12 @@ namespace Multiplayer_Mod
 
 		public int ReadInt(bool _moveReadPos = true)
 		{
-			if (this.buffer.Count > this.readPos)
+			if (buffer.Count > readPos)
 			{
-				int result = BitConverter.ToInt32(this.readableBuffer, this.readPos);
+				int result = BitConverter.ToInt32(readableBuffer, readPos);
 				if (_moveReadPos)
 				{
-					this.readPos += 4;
+					readPos += 4;
 				}
 				return result;
 			}
@@ -201,12 +228,12 @@ namespace Multiplayer_Mod
 
 		public long ReadLong(bool _moveReadPos = true)
 		{
-			if (this.buffer.Count > this.readPos)
+			if (buffer.Count > readPos)
 			{
-				long result = BitConverter.ToInt64(this.readableBuffer, this.readPos);
+				long result = BitConverter.ToInt64(readableBuffer, readPos);
 				if (_moveReadPos)
 				{
-					this.readPos += 8;
+					readPos += 8;
 				}
 				return result;
 			}
@@ -215,12 +242,12 @@ namespace Multiplayer_Mod
 
 		public float ReadFloat(bool _moveReadPos = true)
 		{
-			if (this.buffer.Count > this.readPos)
+			if (buffer.Count > readPos)
 			{
-				float result = BitConverter.ToSingle(this.readableBuffer, this.readPos);
+				float result = BitConverter.ToSingle(readableBuffer, readPos);
 				if (_moveReadPos)
 				{
-					this.readPos += 4;
+					readPos += 4;
 				}
 				return result;
 			}
@@ -229,12 +256,12 @@ namespace Multiplayer_Mod
 
 		public bool ReadBool(bool _moveReadPos = true)
 		{
-			if (this.buffer.Count > this.readPos)
+			if (buffer.Count > readPos)
 			{
-				bool result = BitConverter.ToBoolean(this.readableBuffer, this.readPos);
+				bool result = BitConverter.ToBoolean(readableBuffer, readPos);
 				if (_moveReadPos)
 				{
-					this.readPos++;
+					readPos++;
 				}
 				return result;
 			}
@@ -246,11 +273,11 @@ namespace Multiplayer_Mod
 			string result;
 			try
 			{
-				int num = this.ReadInt(true);
-				string @string = Encoding.ASCII.GetString(this.readableBuffer, this.readPos, num);
+				int num = ReadInt(true);
+				string @string = Encoding.ASCII.GetString(readableBuffer, readPos, num);
 				if (_moveReadPos && @string.Length > 0)
 				{
-					this.readPos += num;
+					readPos += num;
 				}
 				result = @string;
 			}
@@ -266,9 +293,35 @@ namespace Multiplayer_Mod
 			return new Vector3(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
 		}
 
+		public Vector3 ReadVector3Optimised(bool _moveReadPos = true)
+		{
+			// If should change return new value
+			if (ReadBool()) return new Vector3(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
+			// If shouldn't change return 0
+			else return Vector3.zero;
+		}
+
 		public Quaternion ReadQuaternion(bool _moveReadPos = true)
 		{
 			return new Quaternion(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
+		}
+
+		public Quaternion ReadQuaternionOptimised(bool _moveReadPos = true)
+		{
+			// If should change return new value
+			if (ReadBool()) return new Quaternion(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
+			// If shouldn't change return 0
+			else return Quaternion.identity;
+		}
+
+		public PlayerData ReadPlayerData(bool _moveReadPos = true) 
+		{
+			return new PlayerData() { head = ReadObjectData(_moveReadPos), leftHand = ReadObjectData(_moveReadPos), rightHand = ReadObjectData(_moveReadPos) };
+		}
+
+		public ObjectData ReadObjectData(bool _moveReadPos = true)
+		{
+			return new ObjectData() { position = ReadVector3Optimised(_moveReadPos), rotation = ReadQuaternionOptimised(_moveReadPos), velocity = ReadVector3Optimised(_moveReadPos) };
 		}
 
 		public Color ReadColor(bool _moveReadPos = true)
@@ -279,21 +332,21 @@ namespace Multiplayer_Mod
 
 		protected virtual void Dispose(bool _disposing)
 		{
-			if (!this.disposed)
+			if (!disposed)
 			{
 				if (_disposing)
 				{
-					this.buffer = null;
-					this.readableBuffer = null;
-					this.readPos = 0;
+					buffer = null;
+					readableBuffer = null;
+					readPos = 0;
 				}
-				this.disposed = true;
+				disposed = true;
 			}
 		}
 
 		public void Dispose()
 		{
-			this.Dispose(true);
+			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
 	}

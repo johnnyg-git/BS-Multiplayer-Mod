@@ -17,9 +17,9 @@ namespace Multiplayer_Mod.Server
 
         // The clients id
         public int id;
-        // The players tcp manager
+        // The players serverside tcp manager
         public TCP tcp;
-        // The players udp manager
+        // The players serverside udp manager
         public UDP udp;
 
         /// <summary>
@@ -33,6 +33,22 @@ namespace Multiplayer_Mod.Server
             udp = new UDP(id);
         }
 
+        /// <summary>
+        /// Disconnect the client from the server
+        /// </summary>
+        public void Disconnect()
+        {
+            Debug.Log($"{id} has disconnected");
+
+            tcp.Disconnect();
+            udp.Disconnect();
+
+            ServerSender.SendDisconnect(id);
+        }
+
+        /// <summary>
+        /// Tcp manager
+        /// </summary>
         public class TCP
         {
             public TcpClient socket;
@@ -74,6 +90,18 @@ namespace Multiplayer_Mod.Server
             }
 
             /// <summary>
+            /// Disconects the tcp
+            /// </summary>
+            public void Disconnect()
+            {
+                socket.Close();
+                stream = null;
+                receivedData = null;
+                receiveBuffer = null;
+                socket = null;
+            }
+
+            /// <summary>
             /// Will send a packet over tcp to the client
             /// </summary>
             /// <param name="_packet">The packet to send</param>
@@ -84,6 +112,7 @@ namespace Multiplayer_Mod.Server
                     if (socket != null)
                     {
                         // Writes the packet
+                        Debug.Log($"Sent tcp data to player {id}");
                         stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
                     }
                 }
@@ -105,7 +134,7 @@ namespace Multiplayer_Mod.Server
                     int _byteLength = stream.EndRead(_result);
                     if (_byteLength <= 0)
                     {
-                        // Handle disconnect
+                        Disconnect();
                         return;
                     }
 
@@ -115,10 +144,10 @@ namespace Multiplayer_Mod.Server
                     receivedData.Reset(HandleData(_data));
                     stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
                 }
-                catch (Exception _ex)
+                catch (Exception e)
                 {
-                    // Disconnect
-                    Debug.Log($"Error receiving TCP data: {_ex}");
+                    Disconnect();
+                    Debug.Log($"Error receiving TCP data: {e}");
                 }
             }
 
@@ -178,6 +207,9 @@ namespace Multiplayer_Mod.Server
             }
         }
 
+        /// <summary>
+        /// Udp manager
+        /// </summary>
         public class UDP
         {
             // Udp end point
@@ -202,6 +234,14 @@ namespace Multiplayer_Mod.Server
             public void Connect(IPEndPoint _endPoint)
             {
                 endPoint = _endPoint;
+            }
+
+            /// <summary>
+            /// Disconnects the udp
+            /// </summary>
+            public void Disconnect()
+            {
+                endPoint = null;
             }
 
             /// <summary>
