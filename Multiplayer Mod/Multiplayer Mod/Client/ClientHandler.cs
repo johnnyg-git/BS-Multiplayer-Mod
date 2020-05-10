@@ -103,6 +103,10 @@ namespace Multiplayer_Mod.Client
             }
         }
 
+        /// <summary>
+        /// Ran when an error is received from the server
+        /// </summary>
+        /// <param name="_packet"></param>
         public static void handleError(Packet _packet)
         {
             string error = _packet.ReadString();

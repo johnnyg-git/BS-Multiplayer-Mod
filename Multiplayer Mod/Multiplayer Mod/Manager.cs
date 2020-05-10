@@ -36,6 +36,10 @@ namespace Multiplayer_Mod
             }
         }
 
+        /// <summary>
+        /// Ran when the game is closed
+        /// Will begin disconnecting
+        /// </summary>
         void OnApplicationQuit()
         {
             disconnectClient();
@@ -75,6 +79,9 @@ namespace Multiplayer_Mod
             new Client.Client(ip, port);
         }
 
+        /// <summary>
+        /// Disconnects the client
+        /// </summary>
         public static void disconnectClient()
         {
             if (Client.Client.connected)

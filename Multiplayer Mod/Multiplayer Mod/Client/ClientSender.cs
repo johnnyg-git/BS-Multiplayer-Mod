@@ -30,6 +30,10 @@ namespace Multiplayer_Mod.Client
 			Client.udp.SendData(_packet);
 		}
 
+		/// <summary>
+		/// Sends player data to the server
+		/// </summary>
+		/// <param name="data">The player data to send</param>
 		public static void sendPlayerData(PlayerData data)
 		{
 			using (Packet packet = new Packet((int)packetTypes.playerInfo))

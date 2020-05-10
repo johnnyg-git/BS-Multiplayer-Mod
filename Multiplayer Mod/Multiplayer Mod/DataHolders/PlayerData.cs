@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace Multiplayer_Mod
 {
+    /// <summary>
+    /// Used for transfering player data across the network
+    /// </summary>
     public class PlayerData
     {
         public int id;
