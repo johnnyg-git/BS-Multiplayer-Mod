@@ -31,11 +31,56 @@ namespace Multiplayer_Mod.Client
             }
         }
 
+        /// <summary>
+        /// Will handle player information sent by the server
+        /// </summary>
+        /// <param name="_packet"></param>
         public static void handlePlayer(Packet _packet)
         {
-            // Handle player info
+            PlayerData player = _packet.ReadPlayerData();
+            if(Client.players.ContainsKey(player.id) && Client.players[player.id].leftHand.transform !=null)
+            {
+                Client.players[player.id].leftHand.position = player.leftHand.position;
+                player.leftHand = Client.players[player.id].leftHand;
+            }
+            else
+            {
+                player.leftHand.transform = Catalog.current.GetData<ItemData>("MultiplayerHand").Spawn().transform;
+                if(player.id==Client.myId)
+                    GameObject.Destroy(player.leftHand.transform.GetComponent<Collider>());
+            }
+            if (Client.players.ContainsKey(player.id) && Client.players[player.id].rightHand.transform != null)
+            {
+                Client.players[player.id].rightHand.transform.position = player.rightHand.position;
+                player.rightHand = Client.players[player.id].rightHand;
+                if (player.id == Client.myId)
+                    GameObject.Destroy(player.rightHand.transform.GetComponent<Collider>());
+            }
+            else
+            {
+                player.rightHand.transform = Catalog.current.GetData<ItemData>("MultiplayerHand").Spawn().transform;
+            }
+            if (player.id != Client.myId)
+            {
+                Debug.Log($"Their id {player.id} our id {Client.myId}");
+                if (Client.players.ContainsKey(player.id) && Client.players[player.id].head.transform != null)
+                {
+                    Client.players[player.id].head.transform.position = player.head.position;
+                    player.head = Client.players[player.id].head;
+                }
+                else
+                {
+                    player.head.transform = Catalog.current.GetData<ItemData>("MultiplayerHand").Spawn().transform;
+                    player.head.transform.localScale *= 2;
+                }
+            }
+            Debug.Log("Handled player data\nLeftHandPos: " + player.leftHand.position);
+            Client.players[player.id] = player;
         }
 
+        /// <summary>
+        /// Will handle everything when a player disconnects from the server
+        /// </summary>
         public static void handleDisconnect(Packet _packet)
         {
             int disconectee = _packet.ReadInt();

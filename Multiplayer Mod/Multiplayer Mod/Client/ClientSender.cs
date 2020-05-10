@@ -32,7 +32,6 @@ namespace Multiplayer_Mod.Client
 
 		public static void sendPlayerData(PlayerData data)
 		{
-			Debug.Log("Sending player data");	
 			using (Packet packet = new Packet((int)packetTypes.playerInfo))
 			{
 				packet.Write(data);

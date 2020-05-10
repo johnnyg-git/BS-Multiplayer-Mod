@@ -81,7 +81,7 @@ namespace Multiplayer_Mod.Server
         /// </summary>
         /// <param name="_exceptClient">The clients to not send to</param>
         /// <param name="_packet">The packet to send</param>
-        private static void SendUDPDataToAll(int[] _exceptClient, Packet _packet)
+        private static void SendUDPDataToAllE(int[] _exceptClient, Packet _packet)
         {
             _packet.WriteLength();
             foreach (Client client in Server.clients.Values)
@@ -109,6 +109,22 @@ namespace Multiplayer_Mod.Server
             }
         }
 
+        public static void SendPlayerData()
+        {
+            foreach (PlayerData player in Server.players.Values)
+            {
+                using (Packet _packet = new Packet((int)packetTypes.playerInfo))
+                {
+                    _packet.Write(player);
+                    SendUDPDataToAllE(new int[] {}, _packet);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Will send disconnect information to every client to handle
+        /// </summary>
+        /// <param name="_disconectee">The players id who is disconnecting</param>
         public static void SendDisconnect(int _disconectee)
         {
             Debug.Log("Sending disconnect message from " + _disconectee);

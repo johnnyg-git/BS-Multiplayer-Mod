@@ -19,7 +19,6 @@ namespace Multiplayer_Mod.Server
         {
             PlayerData data = _packet.ReadPlayerData();
             Server.players[_fromClient] = data;
-            Debug.Log($"Received PlayerData from {_fromClient}\nLeftHand pos: {data.leftHand.position}\nRightHandPos: {data.rightHand.position}\nHeadPos: {data.head.position}");
         }
 
         /// <summary>

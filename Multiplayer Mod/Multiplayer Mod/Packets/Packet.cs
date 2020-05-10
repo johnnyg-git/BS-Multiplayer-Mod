@@ -155,6 +155,7 @@ namespace Multiplayer_Mod
 
 		public void Write(PlayerData _value)
 		{
+			Write(_value.id);
 			Write(_value.head);
 			Write(_value.leftHand);
 			Write(_value.rightHand);
@@ -316,7 +317,7 @@ namespace Multiplayer_Mod
 
 		public PlayerData ReadPlayerData(bool _moveReadPos = true) 
 		{
-			return new PlayerData() { head = ReadObjectData(_moveReadPos), leftHand = ReadObjectData(_moveReadPos), rightHand = ReadObjectData(_moveReadPos) };
+			return new PlayerData(ReadInt()) { head = ReadObjectData(_moveReadPos), leftHand = ReadObjectData(_moveReadPos), rightHand = ReadObjectData(_moveReadPos) };
 		}
 
 		public ObjectData ReadObjectData(bool _moveReadPos = true)

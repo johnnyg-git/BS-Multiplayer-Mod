@@ -9,12 +9,14 @@ namespace Multiplayer_Mod
 {
     public class PlayerData
     {
+        public int id;
         public ObjectData leftHand;
         public ObjectData rightHand;
         public ObjectData head;
 
-        public PlayerData()
+        public PlayerData(int id)
         {
+            this.id = id;
             leftHand = new ObjectData();
             rightHand = new ObjectData();
             head = new ObjectData();

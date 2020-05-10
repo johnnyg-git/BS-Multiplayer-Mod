@@ -47,10 +47,10 @@ namespace Multiplayer_Mod
         void Update()
         {
             ThreadManager.UpdateMain();
-            if(Client.Client.connected)
+            if(Client.Client.connected && Client.Client.myId!=0)
             {
                 // Client is connected to a server
-                if (player == null) player = new PlayerData();
+                if (player == null) player = new PlayerData(Client.Client.myId);
                 if (Player.local != null && Player.local.body != null) {
                     player.leftHand.position = Player.local.body.handLeft.transform.position;
                     player.rightHand.position = Player.local.body.handRight.transform.position;
@@ -60,7 +60,7 @@ namespace Multiplayer_Mod
             }
             if(serverRunning)
             {
-                // Server is running
+                ServerSender.SendPlayerData();
             }
         }
 
