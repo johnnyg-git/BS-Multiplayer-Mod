@@ -1,10 +1,13 @@
-﻿using System;
+﻿using BS;
+using Multiplayer_Mod.DataHolders;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Debug = UnityEngine.Debug;
+using ItemData = Multiplayer_Mod.DataHolders.ItemData;
 
 namespace Multiplayer_Mod.Client
 {
@@ -37,6 +40,15 @@ namespace Multiplayer_Mod.Client
 		public static void sendPlayerData(PlayerData data)
 		{
 			using (Packet packet = new Packet((int)packetTypes.playerInfo))
+			{
+				packet.Write(data);
+				SendUDPData(packet);
+			}
+		}
+
+		public static void sendItemData(ItemData data)
+		{
+			using (Packet packet = new Packet((int)packetTypes.itemInfo))
 			{
 				packet.Write(data);
 				SendUDPData(packet);

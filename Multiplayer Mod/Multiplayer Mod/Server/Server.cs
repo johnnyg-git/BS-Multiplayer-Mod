@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using BS;
+using Multiplayer_Mod.DataHolders;
+using ItemData = Multiplayer_Mod.DataHolders.ItemData;
 
 namespace Multiplayer_Mod.Server
 {
@@ -25,6 +28,9 @@ namespace Multiplayer_Mod.Server
         public static Dictionary<int, Client> clients = new Dictionary<int, Client>();
         // Player data and their ids
         public static Dictionary<int, PlayerData> players = new Dictionary<int, PlayerData>();
+        // Item data and their ids
+        public static Dictionary<int, Dictionary<int,ItemData>> items = new Dictionary<int, Dictionary<int, ItemData>>();
+        public static int networkIds;
         // Packet handlers and the id of what packet type they are handing
         public static Dictionary<int, PacketHandler> packetHandlers;
         // How packet handling methods should be setup
@@ -81,7 +87,8 @@ namespace Multiplayer_Mod.Server
             packetHandlers = new Dictionary<int, PacketHandler>()
             {
                 { (int)packetTypes.welcome, ServerHandler.welcome },
-                { (int)packetTypes.playerInfo, ServerHandler.handlePlayerInfo }
+                { (int)packetTypes.playerInfo, ServerHandler.handlePlayerInfo },
+                { (int)packetTypes.itemInfo, ServerHandler.handleItemInfo }
             };
             Debug.Log("Initialized packets.");
         }

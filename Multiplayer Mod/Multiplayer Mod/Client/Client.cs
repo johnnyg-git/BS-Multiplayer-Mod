@@ -1,5 +1,6 @@
 ﻿using BS;
 using Multiplayer_Mod;
+using Multiplayer_Mod.DataHolders;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Net.Sockets;
 using System.Security.AccessControl;
 using System.Threading;
 using UnityEngine;
+using ItemData = Multiplayer_Mod.DataHolders.ItemData;
 
 namespace Multiplayer_Mod.Client
 {
@@ -43,6 +45,9 @@ namespace Multiplayer_Mod.Client
         public delegate void PacketHandler(Packet _packet);
 
         public static Dictionary<int, PlayerData> players = new Dictionary<int, PlayerData>();
+        public static Dictionary<int, ItemData> items = new Dictionary<int, ItemData>();
+        public static Dictionary<Item, ItemData> sendingItems = new Dictionary<Item, ItemData>();
+        public static Dictionary<int, Item> networkedItems = new Dictionary<int, Item>();
 
         /// <summary>
         /// Constructor
@@ -76,6 +81,7 @@ namespace Multiplayer_Mod.Client
             {
             {(int)packetTypes.welcome, ClientHandler.handleWelcome },
             {(int)packetTypes.playerInfo, ClientHandler.handlePlayer },
+            {(int)packetTypes.itemInfo, ClientHandler.handleItem },
             {(int)packetTypes.error, ClientHandler.handleError },
             {(int)packetTypes.disconnect, ClientHandler.handleDisconnect }
             };

@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.Net;
 using BS;
+using Multiplayer_Mod.DataHolders;
+using ItemData = Multiplayer_Mod.DataHolders.ItemData;
 
 namespace Multiplayer_Mod.Client
 {
     class ClientHandler
     {
+        public static List<string> ignoredItems = new List<string>();
+
         /// <summary>
         /// Will read the packet and get the clients id
         /// Will connect the clients udp to the server
@@ -31,6 +35,41 @@ namespace Multiplayer_Mod.Client
             }
         }
 
+        public static void handleItem(Packet _packet)
+        {
+            ItemData data = _packet.ReadItemData();
+            if (data.playerControl != Client.myId)
+            {
+                if (ignoredItems.Contains(data.itemId)) return;
+                if (Client.items.ContainsKey(data.networkId) && Client.items[data.networkId].clientsideItem != null)
+                {
+                    Client.items[data.networkId].clientsideItem.transform.position = data.objectData.position;
+                    Client.items[data.networkId].clientsideItem.transform.rotation = data.objectData.rotation;
+                    Client.items[data.networkId].clientsideItem.rb.velocity = data.objectData.velocity;
+                    Client.items[data.networkId].clientsideItem.rb.angularVelocity = data.objectData.angularVelocity;
+                }
+                else
+                {
+                    if(Catalog.current.GetData<BS.ItemData>(data.itemId)!=null)
+                    {
+                        data.clientsideItem = Catalog.current.GetData<BS.ItemData>(data.itemId).Spawn();
+                        data.clientsideItem.rb.isKinematic = true;
+                        data.clientsideItem.transform.position = data.objectData.position;
+                        data.clientsideItem.transform.rotation = data.objectData.rotation;
+                        data.clientsideItem.rb.velocity = data.objectData.velocity;
+                        data.clientsideItem.rb.angularVelocity = data.objectData.angularVelocity;
+                        Client.items[data.networkId] = data;
+                        Client.networkedItems[data.networkId] = data.clientsideItem;
+                    }
+                    else
+                    {
+                        Debug.Log($"{data.itemId} failed to spawn, adding to ignored items list");
+                        ignoredItems.Add(data.itemId);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Will handle player information sent by the server
         /// </summary>
@@ -45,7 +84,7 @@ namespace Multiplayer_Mod.Client
             }
             else
             {
-                player.leftHand.transform = Catalog.current.GetData<ItemData>("MultiplayerHand").Spawn().transform;
+                player.leftHand.transform = Catalog.current.GetData<BS.ItemData>("MultiplayerHand").Spawn().transform;
                 if (player.id == Client.myId)
                     GameObject.Destroy(player.leftHand.transform.GetComponent<Collider>());
             }
@@ -56,13 +95,12 @@ namespace Multiplayer_Mod.Client
             }
             else
             {
-                player.rightHand.transform = Catalog.current.GetData<ItemData>("MultiplayerHand").Spawn().transform;
+                player.rightHand.transform = Catalog.current.GetData<BS.ItemData>("MultiplayerHand").Spawn().transform;
                 if (player.id == Client.myId)
                     GameObject.Destroy(player.rightHand.transform.GetComponent<Collider>());
             }
             if (player.id != Client.myId)
             {
-                Debug.Log($"Their id {player.id} our id {Client.myId}");
                 if (Client.players.ContainsKey(player.id) && Client.players[player.id].head.transform != null)
                 {
                     Client.players[player.id].head.transform.position = player.head.position;
@@ -70,7 +108,7 @@ namespace Multiplayer_Mod.Client
                 }
                 else
                 {
-                    player.head.transform = Catalog.current.GetData<ItemData>("MultiplayerHand").Spawn().transform;
+                    player.head.transform = Catalog.current.GetData<BS.ItemData>("MultiplayerHand").Spawn().transform;
                     player.head.transform.localScale *= 2;
                 }
             }

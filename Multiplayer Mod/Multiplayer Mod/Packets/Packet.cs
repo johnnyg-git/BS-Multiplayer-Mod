@@ -1,7 +1,10 @@
-﻿using System;
+﻿using BS;
+using Multiplayer_Mod.DataHolders;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using ItemData = Multiplayer_Mod.DataHolders.ItemData;
 
 namespace Multiplayer_Mod
 {
@@ -168,6 +171,15 @@ namespace Multiplayer_Mod
 			Write(_value.velocity);
 		}
 
+		public void Write(Multiplayer_Mod.DataHolders.ItemData _value)
+		{
+			Write(_value.networkId);
+			Write(_value.clientsideId);
+			Write(_value.itemId);
+			Write(_value.objectData);
+			Write(_value.playerControl);
+		}
+
 		#endregion
 
 		#region reading
@@ -323,6 +335,13 @@ namespace Multiplayer_Mod
 		public ObjectData ReadObjectData(bool _moveReadPos = true)
 		{
 			return new ObjectData() { position = ReadVector3(_moveReadPos), rotation = ReadQuaternion(_moveReadPos), velocity = ReadVector3(_moveReadPos) };
+		}
+
+		public ItemData ReadItemData(bool _moveReadPos = true)
+		{
+			int networkId = ReadInt();
+			int clientSideId = ReadInt();
+			return new ItemData(networkId, ReadString(), ReadObjectData()) { playerControl = ReadInt(), clientsideId = clientSideId };
 		}
 
 		public Color ReadColor(bool _moveReadPos = true)

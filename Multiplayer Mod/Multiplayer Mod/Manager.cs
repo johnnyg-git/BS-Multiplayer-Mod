@@ -1,5 +1,6 @@
 ﻿using BS;
 using Multiplayer_Mod.Client;
+using Multiplayer_Mod.DataHolders;
 using Multiplayer_Mod.Server;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using ItemData = Multiplayer_Mod.DataHolders.ItemData;
 
 namespace Multiplayer_Mod
 {
@@ -61,10 +63,66 @@ namespace Multiplayer_Mod
                     player.head.position = Player.local.head.transform.position;
                     ClientSender.sendPlayerData(player);
                 }
+                if(serverRunning)
+                {
+                    int i = 0;
+                    foreach(Item item in Item.list)
+                    {
+                        i++;
+                        if (!Client.Client.networkedItems.ContainsValue(item) && item.data.category != BS.ItemData.Category.Body && !item.data.id.Contains("Multiplayer") && item.data.prefab != null)
+                        {
+                            if (!Server.Server.items.ContainsKey(Client.Client.myId))
+                            {
+                                Server.Server.items[Client.Client.myId] = new Dictionary<int, ItemData>();
+                            }
+
+                            if (Client.Client.sendingItems.ContainsKey(item))
+                            {
+                                Client.Client.sendingItems[item].objectData.position = item.transform.position;
+                                Client.Client.sendingItems[item].objectData.rotation = item.transform.rotation;
+                                Client.Client.sendingItems[item].objectData.velocity = item.rb.velocity;
+                                Client.Client.sendingItems[item].objectData.angularVelocity = item.rb.angularVelocity;
+                                Server.Server.items[Client.Client.myId][i] = Client.Client.sendingItems[item];
+                            }
+                            else
+                            {
+                                Server.Server.networkIds++;
+                                Client.Client.sendingItems[item] = new ItemData(Server.Server.networkIds, item.data.id) { playerControl=Client.Client.myId };
+                                Server.Server.items[Client.Client.myId][i] = Client.Client.sendingItems[item];
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    int i = 0;
+                    foreach (Item item in Item.list)
+                    {
+                        i++;
+                        if (!Client.Client.networkedItems.ContainsValue(item) && item.data.category != BS.ItemData.Category.Body && !item.data.id.Contains("Multiplayer") && item.data.prefab!=null)
+                        {
+                            if (Client.Client.sendingItems.ContainsKey(item))
+                            {
+                                Client.Client.sendingItems[item].objectData.position = item.transform.position;
+                                Client.Client.sendingItems[item].objectData.rotation = item.transform.rotation;
+                                Client.Client.sendingItems[item].objectData.velocity = item.rb.velocity;
+                                Client.Client.sendingItems[item].objectData.angularVelocity = item.rb.angularVelocity;
+
+                                ClientSender.sendItemData(Client.Client.sendingItems[item]);
+                            }
+                            else
+                            {
+                                Client.Client.sendingItems[item] = new ItemData(0, item.data.id) { playerControl = Client.Client.myId, clientsideId = i };
+                                ClientSender.sendItemData(Client.Client.sendingItems[item]);
+                            }
+                        }
+                    }
+                }
             }
             if(serverRunning)
             {
                 ServerSender.SendPlayerData();
+                ServerSender.SendItemData();
             }
         }
 

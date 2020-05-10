@@ -1,10 +1,12 @@
 ﻿using BS;
+using Multiplayer_Mod.DataHolders;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Debug = UnityEngine.Debug;
+using ItemData = Multiplayer_Mod.DataHolders.ItemData;
 
 namespace Multiplayer_Mod.Server
 {
@@ -120,6 +122,31 @@ namespace Multiplayer_Mod.Server
                 {
                     _packet.Write(player);
                     SendUDPDataToAllE(new int[] {}, _packet);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends all the stored item data to every player but it's controller
+        /// </summary>
+        public static void SendItemData()
+        {
+            foreach(Dictionary<int, ItemData> dict in Server.items.Values)
+            {
+                foreach (ItemData item in dict.Values)
+                {
+                    if(DateTime.Now>item.toDelete)
+                    {
+                        ThreadManager.ExecuteOnMainThread(() =>
+                        {
+                            Server.items[item.playerControl].Remove(item.clientsideId);
+                        });
+                    }
+                    using (Packet _packet = new Packet((int)packetTypes.itemInfo))
+                    {
+                        _packet.Write(item);
+                        SendUDPDataToAllE(new int[] { item.playerControl }, _packet);
+                    }
                 }
             }
         }
