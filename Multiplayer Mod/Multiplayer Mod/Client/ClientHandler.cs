@@ -38,27 +38,27 @@ namespace Multiplayer_Mod.Client
         public static void handlePlayer(Packet _packet)
         {
             PlayerData player = _packet.ReadPlayerData();
-            if(Client.players.ContainsKey(player.id) && Client.players[player.id].leftHand.transform !=null)
+            if (Client.players.ContainsKey(player.id) && Client.players[player.id].leftHand.transform != null)
             {
-                Client.players[player.id].leftHand.position = player.leftHand.position;
+                Client.players[player.id].leftHand.transform.position = player.leftHand.position;
                 player.leftHand = Client.players[player.id].leftHand;
             }
             else
             {
                 player.leftHand.transform = Catalog.current.GetData<ItemData>("MultiplayerHand").Spawn().transform;
-                if(player.id==Client.myId)
+                if (player.id == Client.myId)
                     GameObject.Destroy(player.leftHand.transform.GetComponent<Collider>());
             }
             if (Client.players.ContainsKey(player.id) && Client.players[player.id].rightHand.transform != null)
             {
                 Client.players[player.id].rightHand.transform.position = player.rightHand.position;
                 player.rightHand = Client.players[player.id].rightHand;
-                if (player.id == Client.myId)
-                    GameObject.Destroy(player.rightHand.transform.GetComponent<Collider>());
             }
             else
             {
                 player.rightHand.transform = Catalog.current.GetData<ItemData>("MultiplayerHand").Spawn().transform;
+                if (player.id == Client.myId)
+                    GameObject.Destroy(player.rightHand.transform.GetComponent<Collider>());
             }
             if (player.id != Client.myId)
             {
@@ -74,7 +74,6 @@ namespace Multiplayer_Mod.Client
                     player.head.transform.localScale *= 2;
                 }
             }
-            Debug.Log("Handled player data\nLeftHandPos: " + player.leftHand.position);
             Client.players[player.id] = player;
         }
 

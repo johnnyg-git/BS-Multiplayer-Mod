@@ -119,7 +119,7 @@ namespace Multiplayer_Mod.Server
                 using (Packet _packet = new Packet((int)packetTypes.playerInfo))
                 {
                     _packet.Write(player);
-                    SendUDPDataToAllE(new int[] { player.id }, _packet);
+                    SendUDPDataToAllE(new int[] {}, _packet);
                 }
             }
         }

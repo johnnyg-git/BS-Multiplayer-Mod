@@ -163,9 +163,9 @@ namespace Multiplayer_Mod
 
 		public void Write(ObjectData _value)
 		{
-			Write(_value.position, _value.prevPosition);
-			Write(_value.rotation, _value.prevRotation);
-			Write(_value.velocity, _value.prevVelocity);
+			Write(_value.position);
+			Write(_value.rotation);
+			Write(_value.velocity);
 		}
 
 		#endregion
@@ -322,7 +322,7 @@ namespace Multiplayer_Mod
 
 		public ObjectData ReadObjectData(bool _moveReadPos = true)
 		{
-			return new ObjectData() { position = ReadVector3Optimised(_moveReadPos), rotation = ReadQuaternionOptimised(_moveReadPos), velocity = ReadVector3Optimised(_moveReadPos) };
+			return new ObjectData() { position = ReadVector3(_moveReadPos), rotation = ReadQuaternion(_moveReadPos), velocity = ReadVector3(_moveReadPos) };
 		}
 
 		public Color ReadColor(bool _moveReadPos = true)
