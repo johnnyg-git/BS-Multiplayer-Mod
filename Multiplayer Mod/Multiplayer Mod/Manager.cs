@@ -61,36 +61,56 @@ namespace Multiplayer_Mod
                     player.leftHand.position = Player.local.body.handLeft.transform.position;
                     player.rightHand.position = Player.local.body.handRight.transform.position;
                     player.head.position = Player.local.head.transform.position;
+                    player.head.rotation = Player.local.head.transform.rotation;
                     ClientSender.sendPlayerData(player);
                 }
+
+                foreach(ItemData item in Client.Client.items.Values)
+                {
+                    if(DateTime.Now > item.toDelete)
+                    {
+                        ThreadManager.ExecuteOnMainThread(() =>
+                        {
+                            Client.Client.items.Remove(item.networkId);
+                            Client.Client.networkedItems.Remove(item.networkId);
+                        });
+                        item.clientsideItem.Despawn();
+                    }
+                }
+
                 if(serverRunning)
                 {
                     int i = 0;
                     foreach(Item item in Item.list)
                     {
-                        i++;
-                        if (!Client.Client.networkedItems.ContainsValue(item) && item.data.category != BS.ItemData.Category.Body && !item.data.id.Contains("Multiplayer") && item.data.prefab != null)
+                        if (item.data.category != BS.ItemData.Category.Prop)
                         {
-                            if (!Server.Server.items.ContainsKey(Client.Client.myId))
+                            i++;
+                            if (!Client.Client.networkedItems.ContainsValue(item) && item.data.category != BS.ItemData.Category.Body && !item.data.id.Contains("Multiplayer") && item.data.prefab != null)
                             {
-                                Server.Server.items[Client.Client.myId] = new Dictionary<int, ItemData>();
-                            }
+                                if (!Server.Server.items.ContainsKey(Client.Client.myId))
+                                {
+                                    Server.Server.items[Client.Client.myId] = new Dictionary<int, ItemData>();
+                                }
 
-                            if (Client.Client.sendingItems.ContainsKey(item))
-                            {
-                                Client.Client.sendingItems[item].objectData.position = item.transform.position;
-                                Client.Client.sendingItems[item].objectData.rotation = item.transform.rotation;
-                                Client.Client.sendingItems[item].objectData.velocity = item.rb.velocity;
-                                Client.Client.sendingItems[item].objectData.angularVelocity = item.rb.angularVelocity;
-                                Server.Server.items[Client.Client.myId][i] = Client.Client.sendingItems[item];
-                            }
-                            else
-                            {
-                                Server.Server.networkIds++;
-                                Client.Client.sendingItems[item] = new ItemData(Server.Server.networkIds, item.data.id) { playerControl=Client.Client.myId };
-                                Server.Server.items[Client.Client.myId][i] = Client.Client.sendingItems[item];
+                                if (Client.Client.sendingItems.ContainsKey(item))
+                                {
+                                    Client.Client.sendingItems[item].objectData.position = item.transform.position;
+                                    Client.Client.sendingItems[item].objectData.rotation = item.transform.rotation;
+                                    Client.Client.sendingItems[item].objectData.velocity = item.rb.velocity;
+                                    Client.Client.sendingItems[item].objectData.angularVelocity = item.rb.angularVelocity;
+                                    Server.Server.items[Client.Client.myId][i] = Client.Client.sendingItems[item];
+                                }
+                                else
+                                {
+                                    Server.Server.networkIds++;
+                                    Client.Client.sendingItems[item] = new ItemData(Server.Server.networkIds, item.data.id) { playerControl = Client.Client.myId };
+                                    Server.Server.items[Client.Client.myId][i] = Client.Client.sendingItems[item];
+                                }
                             }
                         }
+                        else
+                            item.Despawn();
                     }
                 }
                 else
@@ -98,24 +118,29 @@ namespace Multiplayer_Mod
                     int i = 0;
                     foreach (Item item in Item.list)
                     {
-                        i++;
-                        if (!Client.Client.networkedItems.ContainsValue(item) && item.data.category != BS.ItemData.Category.Body && !item.data.id.Contains("Multiplayer") && item.data.prefab!=null)
+                        if (item.data.category != BS.ItemData.Category.Prop)
                         {
-                            if (Client.Client.sendingItems.ContainsKey(item))
+                            i++;
+                            if (!Client.Client.networkedItems.ContainsValue(item) && item.data.category != BS.ItemData.Category.Body && !item.data.id.Contains("Multiplayer") && item.data.prefab != null)
                             {
-                                Client.Client.sendingItems[item].objectData.position = item.transform.position;
-                                Client.Client.sendingItems[item].objectData.rotation = item.transform.rotation;
-                                Client.Client.sendingItems[item].objectData.velocity = item.rb.velocity;
-                                Client.Client.sendingItems[item].objectData.angularVelocity = item.rb.angularVelocity;
+                                if (Client.Client.sendingItems.ContainsKey(item))
+                                {
+                                    Client.Client.sendingItems[item].objectData.position = item.transform.position;
+                                    Client.Client.sendingItems[item].objectData.rotation = item.transform.rotation;
+                                    Client.Client.sendingItems[item].objectData.velocity = item.rb.velocity;
+                                    Client.Client.sendingItems[item].objectData.angularVelocity = item.rb.angularVelocity;
 
-                                ClientSender.sendItemData(Client.Client.sendingItems[item]);
-                            }
-                            else
-                            {
-                                Client.Client.sendingItems[item] = new ItemData(0, item.data.id) { playerControl = Client.Client.myId, clientsideId = i };
-                                ClientSender.sendItemData(Client.Client.sendingItems[item]);
+                                    ClientSender.sendItemData(Client.Client.sendingItems[item]);
+                                }
+                                else
+                                {
+                                    Client.Client.sendingItems[item] = new ItemData(0, item.data.id) { playerControl = Client.Client.myId, clientsideId = i };
+                                    ClientSender.sendItemData(Client.Client.sendingItems[item]);
+                                }
                             }
                         }
+                        else
+                            item.Despawn();
                     }
                 }
             }

@@ -20,7 +20,7 @@ namespace Multiplayer_Mod
                 return;
             }*/
 
-            tickRate = 1 / 90;
+            tickRate = 1 / 40;
             Server.Server.Start(25, 26950);
             Thread mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();

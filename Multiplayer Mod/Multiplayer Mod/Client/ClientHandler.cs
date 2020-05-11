@@ -47,17 +47,21 @@ namespace Multiplayer_Mod.Client
                     Client.items[data.networkId].clientsideItem.transform.rotation = data.objectData.rotation;
                     Client.items[data.networkId].clientsideItem.rb.velocity = data.objectData.velocity;
                     Client.items[data.networkId].clientsideItem.rb.angularVelocity = data.objectData.angularVelocity;
+                    Client.items[data.networkId].toDelete = DateTime.Now.AddMilliseconds(100);
                 }
                 else
                 {
                     if(Catalog.current.GetData<BS.ItemData>(data.itemId)!=null)
                     {
                         data.clientsideItem = Catalog.current.GetData<BS.ItemData>(data.itemId).Spawn();
-                        data.clientsideItem.rb.isKinematic = true;
+                        data.clientsideItem.data.forceLayer = LayerName.MovingObject;
+                        data.clientsideItem.SetColliderAndMeshLayer(VRManager.GetLayer(LayerName.MovingObject));
+                        data.clientsideItem.data.moduleAI = null;
                         data.clientsideItem.transform.position = data.objectData.position;
                         data.clientsideItem.transform.rotation = data.objectData.rotation;
                         data.clientsideItem.rb.velocity = data.objectData.velocity;
                         data.clientsideItem.rb.angularVelocity = data.objectData.angularVelocity;
+                        data.toDelete = DateTime.Now.AddMilliseconds(100);
                         Client.items[data.networkId] = data;
                         Client.networkedItems[data.networkId] = data.clientsideItem;
                     }
@@ -104,12 +108,12 @@ namespace Multiplayer_Mod.Client
                 if (Client.players.ContainsKey(player.id) && Client.players[player.id].head.transform != null)
                 {
                     Client.players[player.id].head.transform.position = player.head.position;
+                    Client.players[player.id].head.transform.rotation = player.head.rotation;
                     player.head = Client.players[player.id].head;
                 }
                 else
                 {
-                    player.head.transform = Catalog.current.GetData<BS.ItemData>("MultiplayerHand").Spawn().transform;
-                    player.head.transform.localScale *= 2;
+                    player.head.transform = Catalog.current.GetData<BS.ItemData>("MultiplayerHead").Spawn().transform;
                 }
             }
             Client.players[player.id] = player;
