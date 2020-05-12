@@ -65,18 +65,6 @@ namespace Multiplayer_Mod
                     ClientSender.sendPlayerData(player);
                 }
 
-                foreach(ItemData item in Client.Client.items.Values)
-                {
-                    if(DateTime.Now > item.toDelete)
-                    {
-                        ThreadManager.ExecuteOnMainThread(() =>
-                        {
-                            Client.Client.items.Remove(item.networkId);
-                            Client.Client.networkedItems.Remove(item.networkId);
-                        });
-                        item.clientsideItem.Despawn();
-                    }
-                }
 
                 if(serverRunning)
                 {
@@ -141,6 +129,19 @@ namespace Multiplayer_Mod
                         }
                         else
                             item.Despawn();
+                    }
+                }
+
+                foreach (ItemData item in Client.Client.items.Values)
+                {
+                    if (DateTime.Now > item.toDelete)
+                    {
+                        ThreadManager.ExecuteOnMainThread(() =>
+                        {
+                            Client.Client.items.Remove(item.networkId);
+                            Client.Client.networkedItems.Remove(item.networkId);
+                        });
+                        item.clientsideItem.Despawn();
                     }
                 }
             }

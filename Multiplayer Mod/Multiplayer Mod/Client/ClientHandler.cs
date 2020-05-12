@@ -43,10 +43,16 @@ namespace Multiplayer_Mod.Client
                 if (ignoredItems.Contains(data.itemId)) return;
                 if (Client.items.ContainsKey(data.networkId) && Client.items[data.networkId].clientsideItem != null)
                 {
+                    if(Client.items[data.networkId].clientsideItem.data.id!=data.itemId)
+                    {
+                        Client.items[data.networkId].clientsideItem.Despawn();
+                        return;
+                    }
                     Client.items[data.networkId].clientsideItem.transform.position = data.objectData.position;
                     Client.items[data.networkId].clientsideItem.transform.rotation = data.objectData.rotation;
                     Client.items[data.networkId].clientsideItem.rb.velocity = data.objectData.velocity;
                     Client.items[data.networkId].clientsideItem.rb.angularVelocity = data.objectData.angularVelocity;
+                    Client.items[data.networkId].clientsideItem.rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
                     Client.items[data.networkId].toDelete = DateTime.Now.AddMilliseconds(100);
                 }
                 else
