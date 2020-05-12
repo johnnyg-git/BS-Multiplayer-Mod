@@ -124,17 +124,17 @@ namespace Multiplayer_Mod
 
 		public void Write(Vector3 _value)
 		{
-			Write((short)_value.x);
-			Write((short)_value.y);
-			Write((short)_value.z);
+			Write(_value.x);
+			Write(_value.y);
+			Write(_value.z);
 		}
 
 		public void Write(Quaternion _value)
 		{
-			Write((short)_value.x);
-			Write((short)_value.y);
-			Write((short)_value.z);
-			Write((short)_value.w);
+			Write(_value.x);
+			Write(_value.y);
+			Write(_value.z);
+			Write(_value.w);
 		}
 
 		public void Write(Color _value)
