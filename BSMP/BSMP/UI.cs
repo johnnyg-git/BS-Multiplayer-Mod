@@ -33,8 +33,8 @@ namespace BSMP
                 if (menu != 0)
                 {
                     GUI.skin.label.wordWrap = true;
-                    GUI.Box(new Rect(10, 10, 150, 135), "Johnny's Multiplayer\nPress F10 to close");
-                    if (!Manager.connected() && !Manager.serverRunning())
+                    GUI.Box(new Rect(10, 10, 150, 135), "B&S Multiplayer\nPress F10 to close");
+                    if (!Manager.connected() && !Server.ServerRunning())
                     {
                         if (menu != 2)
                         {
@@ -72,7 +72,7 @@ namespace BSMP
                             {
                                 try
                                 {
-                                    // Start server
+                                    Server.Start(Int32.Parse(maxPlayers), Int32.Parse(port));
                                 }
                                 catch (Exception e)
                                 {
@@ -84,14 +84,14 @@ namespace BSMP
                                 menu = 1;
                         }
                     }
-                    else if (Manager.serverRunning())
+                    else if (Server.ServerRunning())
                     {
                         GUI.Label(new Rect(15, 45, 100, 20), "Server is running");
                         GUI.Label(new Rect(15, 60, 100, 20), "Port: " + port);
 
                         if (GUI.Button(new Rect(15, 120, 140, 20), "Shutdown"))
                         {
-                            // Shutdown server
+                            Server.Shutdown();
                         }
 
                     }

@@ -17,11 +17,6 @@ namespace BSMP
             return false;
         }
 
-        public static bool serverRunning()
-        {
-            return false;
-        }
-
         void Start()
         {
             if (instance != null)

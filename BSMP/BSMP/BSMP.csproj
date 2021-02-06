@@ -234,9 +234,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Packets\Packet.cs" />
+    <Compile Include="Server\ServerClient.cs" />
+    <Compile Include="Server\Server.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
